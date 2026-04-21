@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>管理面板</h1>
+<div class="row">
+    {% for model_key in models %}
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ model_key }}</h5>
+                <a href="{{ url_for('admin.list_items', model_key=model_key) }}" class="btn btn-primary">管理</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

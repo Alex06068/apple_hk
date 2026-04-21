@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>歡迎來到 Apple 香港</h1>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description }}</p>
+                <p class="card-text"><strong>HK${{ product.price }}</strong></p>
+                <a href="#" class="btn btn-primary">查看詳情</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

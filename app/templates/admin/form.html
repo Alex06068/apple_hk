@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ action }} {{ name }}</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != 'hidden' %}
+    <div class="mb-3">
+        {{ field.label(class="form-label") }}
+        {{ field(class="form-control") }}
+        {% if field.errors %}
+            <div class="text-danger">{{ field.errors[0] }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">提交</button>
+    <a href="{{ url_for('admin.list_items', model_key=model_key) }}" class="btn btn-secondary">取消</a>
+</form>
+{% endblock %}
