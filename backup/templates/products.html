@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}产品 - Apple (香港){% endblock %}
+
+{% block content %}
+<div class="row pt-5">
+    <h1 class="display-4 text-center mb-5">探索全系列產品</h1>
+    {% for item in items %}
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm text-center p-4">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ item.name }}</h5>
+                <p class="card-text text-muted">{{ item.price }}</p>
+                <a href="#" class="btn btn-primary rounded-pill">立即購買</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

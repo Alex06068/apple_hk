@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}購物袋 - Apple (香港){% endblock %}
+
+{% block content %}
+<div class="container pt-5">
+    <h1 class="fw-bold mb-4">你的購物袋內容。</h1>
+    <div class="p-5 bg-light rounded-3 text-center">
+        <p class="lead">你的購物袋空空如也。</p>
+        <hr class="my-4">
+        <p>準備好開始購物了嗎？</p>
+        <a class="btn btn-primary btn-lg rounded-pill" href="{{ url_for('main.products') }}" role="button">继续购物</a>
+    </div>
+</div>
+{% endblock %}

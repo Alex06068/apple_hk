@@ -1,0 +1,2 @@
+{% extends "base.html" %}
+{% block content %}<h1>{{ product.name }}</h1><p>HK${{ product.price }}</p><form method="POST" action="{{ url_for('main.add_to_cart', product_id=product.id) }}"><input type="number" name="quantity" value="1"><button type="submit">加入購物車</button></form>{% endblock %}
