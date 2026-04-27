@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">重設密碼</h2>
+                    <p class="text-muted">請輸入您的註冊郵箱，我們將向您發送重設密碼的連結。</p>
+                    
+                    <form method="POST" action="{{ url_for('auth.reset_request') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">電子郵件</label>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="example@mail.com">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">發送重設郵件</button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-3 text-center">
+                        <a href="{{ url_for('auth.login') }}" class="text-decoration-none">返回登入</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

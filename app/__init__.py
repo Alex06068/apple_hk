@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_mail import Mail
 import os
 
 # 初始化插件
@@ -11,12 +12,21 @@ login_manager = LoginManager()
 
 # 核心修正：明確指定 url='/admin' 並設定 endpoint，確保 GitHub Codespaces 能正確識別路徑
 admin = Admin(name='Apple Store Admin', url='/admin', endpoint='admin')
+mail = Mail()
 
 def create_app():
     app = Flask(__name__)
     
     # --- 基本配置 ---
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123456')
+
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    # 建議從環境變數讀取，確保安全
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', '你的郵箱@gmail.com')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', '你的應用程式專用密碼')
+    app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
     
     basedir = os.path.abspath(os.path.dirname(__file__))
     default_sqlite = 'sqlite:///' + os.path.join(basedir, 'instance', 'apple_hk.db')
@@ -29,6 +39,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
+    mail.init_app(app)
     
     # 初始化 Flask-Admin
     admin.init_app(app)
@@ -47,7 +58,7 @@ def create_app():
         admin.add_view(ModelView(Order, db.session, name="訂單管理", endpoint="admin_order_view"))
     except Exception as e:
         print(f"管理視圖註冊提示: {e}")
-        
+
     # --- User Loader ---
     @login_manager.user_loader
     def load_user(user_id):
@@ -57,7 +68,7 @@ def create_app():
     # 從 .routes 匯入你剛才修改好的藍圖對象
     from .routes import main, admin_bp, auth
     app.register_blueprint(main)
-    app.register_blueprint(admin_bp) 
+    app.register_blueprint(admin_bp, url_prefix='/admin_custom')
     app.register_blueprint(auth)
 
     # --- 建立資料庫表 ---

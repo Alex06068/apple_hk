@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">設定新密碼</h2>
+                    
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">新密碼</label>
+                            <input type="password" class="form-control" id="password" name="password" required placeholder="請輸入新密碼">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">確認新密碼</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="請再次輸入新密碼">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">更新密碼</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 簡單的前端驗證：檢查兩次密碼是否一致
+    const password = document.getElementById("password");
+    const confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword(){
+        if(password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("密碼不匹配");
+        } else {
+            confirm_password.setCustomValidity('');
+        }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+</script>
+{% endblock %}

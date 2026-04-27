@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}個人資料 - Apple Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="fw-bold mb-4">帳戶設定</h2>
+            
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+                        <span class="fs-2 fw-bold">{{ current_user.username[0] | upper if current_user.username else 'U' }}</span>
+                    </div>
+                    <div class="ms-3">
+                        <h4 class="mb-0 fw-bold">{{ current_user.username }}</h4>
+                        <p class="text-muted mb-0">Apple ID: {{ current_user.email }}</p>
+                    </div>
+                </div>
+                
+                <hr class="text-muted">
+                
+                <div class="row py-2">
+                    <div class="col-sm-3 text-muted">使用者名稱</div>
+                    <div class="col-sm-9 fw-bold">{{ current_user.username }}</div>
+                </div>
+                <div class="row py-2">
+                    <div class="col-sm-3 text-muted">電子郵件</div>
+                    <div class="col-sm-9 fw-bold">{{ current_user.email }}</div>
+                </div>
+                <div class="row py-2">
+                    <div class="col-sm-3 text-muted">帳戶權限</div>
+                    <div class="col-sm-9">
+                        <span class="badge rounded-pill bg-light text-dark border">
+                            {{ '管理員' if current_user.is_admin else '一般用戶' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 text-center">
+                        <i class="bi bi-shield-lock mb-3 fs-1 text-primary"></i>
+                        <h5 class="fw-bold">密碼與安全性</h5>
+                        <p class="small text-muted">定期更新您的密碼以保護帳戶安全</p>
+                        <a href="{{ url_for('auth.reset_request') }}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto">修改密碼</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 text-center">
+                        <i class="bi bi-box-seam mb-3 fs-1 text-primary"></i>
+                        <h5 class="fw-bold">我的訂單</h5>
+                        <p class="small text-muted">查看最近的購買記錄與出貨狀態</p>
+                        <a href="{{ url_for('main.orders') }}" class="btn btn-outline-primary btn-sm rounded-pill mt-auto">前往訂單</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5 text-center">
+                <a href="{{ url_for('auth.logout') }}" class="text-danger text-decoration-none fw-bold">登出帳戶</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

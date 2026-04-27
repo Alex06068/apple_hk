@@ -1,3 +1,4 @@
+import uuid
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, session
 
 from flask_login import login_user, logout_user, current_user, login_required
@@ -12,6 +13,11 @@ from app import db
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from flask_mail import Message
+
+from itsdangerous import URLSafeTimedSerializer as Serializer
+from datetime import datetime
+from .models.order import Order, OrderItem
 
 
 # 定義藍圖
@@ -133,54 +139,58 @@ def view_cart():
 # 🆕 新增：結帳頁面路由
 
 @main.route('/checkout', methods=['GET', 'POST'])
-
 @login_required
-
 def checkout():
-
-    """處理結帳逻辑"""
-
+    """處理結帳邏輯：將購物車轉化為真實訂單"""
     cart = session.get('cart', {})
-
     if not cart:
-
         flash('您的購物車是空的。', 'warning')
-
         return redirect(url_for('main.products'))
 
-
-
     # 計算結帳明細
-
     checkout_items = []
-
     total_price = 0
-
     for product_id, quantity in cart.items():
-
         product = Product.query.get(int(product_id))
-
         if product:
-
             subtotal = product.price * quantity
-
             total_price += subtotal
-
             checkout_items.append({'product': product, 'quantity': quantity, 'subtotal': subtotal})
 
-
-
     if request.method == 'POST':
+        # --- 🆕 新增：資料庫寫入邏輯 ---
+        try:
+            # 1. 建立 Order 主紀錄
+            new_order = Order(
+                user_id=current_user.id,
+                order_number=str(uuid.uuid4().hex[:12].upper()), # 生成隨機編號
+                total_amount=total_price,
+                status='pending',
+                created_at=datetime.utcnow()
+            )
+            db.session.add(new_order)
+            db.session.flush() # 提前獲取 new_order.id 以供關聯
 
-        # 這裡通常會建立資料庫 Order 紀錄，目前先以模擬成功為主
+            # 2. 建立 OrderItem 詳細內容
+            for item in checkout_items:
+                order_item = OrderItem(
+                    order_id=new_order.id,
+                    product_id=item['product'].id,
+                    quantity=item['quantity'],
+                    price=item['product'].price
+                )
+                db.session.add(order_item)
 
-        session.pop('cart', None) # 結帳完清空購物車
+            # 3. 提交變更並清空購物車
+            db.session.commit()
+            session.pop('cart', None) 
+            flash(f'訂單提交成功！訂單編號為：{new_order.order_number}', 'success')
+            return redirect(url_for('main.orders'))
 
-        flash('訂單提交成功！感謝您的選購。', 'success')
-
-        return redirect(url_for('main.orders'))
-
-
+        except Exception as e:
+            db.session.rollback()
+            flash('系統錯誤，無法建立訂單。請聯繫客服。', 'danger')
+            return redirect(url_for('main.view_cart'))
 
     return render_template('checkout.html', items=checkout_items, total=total_price)
 
@@ -206,15 +216,20 @@ def support():
 
 
 
-@main.route('/orders')
-
+# 確保這裡的縮進正確，不要有多餘的空格或少縮進
+@main.route('/profile')
 @login_required
+def profile():
+    # 直接傳遞當前用戶對象到模板
+    return render_template('profile.html', user=current_user)
 
+@main.route('/orders')
+@login_required
 def orders():
-
-    # 這裡目前是靜態顯示，後續可改為從資料庫抓取 User 的訂單
-
-    return render_template('orders.html')
+    from .models.order import Order
+    # 再次檢查：確保使用 created_at 而不是 timestamp，避免 AttributeError
+    user_orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).all()
+    return render_template('orders.html', orders=user_orders)
 
 
 
@@ -334,3 +349,44 @@ def dashboard():
         abort(403)
     # 你可以從資料庫抓數據傳給 dashboard.html
     return render_template('admin/dashboard.html')
+
+@auth.route('/reset_password', methods=['GET', 'POST'])
+def reset_request():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            send_reset_email(user)
+            flash('重設密碼郵件已發送，請檢查信箱。', 'info')
+            return redirect(url_for('auth.login'))
+    return render_template('reset_request.html')
+
+# 執行重設密碼頁面
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    s = Serializer(current_app.config['SECRET_KEY'])
+    try:
+        user_id = s.loads(token, max_age=1800)['user_id'] # Token 30分鐘有效
+    except:
+        flash('該連結無效或已過期。', 'warning')
+        return redirect(url_for('auth.reset_request'))
+    
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        user = User.query.get(user_id)
+        # 這裡應使用 generate_password_hash
+        user.password = new_password 
+        db.session.commit()
+        flash('您的密碼已更新！', 'success')
+        return redirect(url_for('auth.login'))
+    return render_template('reset_token.html')
+
+def send_reset_email(user):
+    s = Serializer(current_app.config['SECRET_KEY'])
+    token = s.dumps({'user_id': user.id})
+    msg = Message('密碼重設請求', sender='noreply@demo.com', recipients=[user.email])
+    msg.body = f'''請點擊以下連結重設密碼：
+{url_for('auth.reset_token', token=token, _external=True)}
+如果您沒有發出此請求，請忽略。
+'''
+    mail.send(msg)
