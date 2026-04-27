@@ -7,6 +7,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    # 核心修正：新增 is_admin 欄位，解決 TypeError
+    is_admin = db.Column(db.Boolean, default=False) 
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     def set_password(self, password):

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}訂單管理 - Apple Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="display-5 fw-bold mb-4">訂單管理</h1>
+    
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>訂單編號</th>
+                    <th>用戶</th>
+                    <th>產品</th>
+                    <th>數量</th>
+                    <th>日期</th>
+                    <th>狀態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <form action="{{ url_for('admin.update_order_status', order_id=order.id) }}" method="post" class="d-flex gap-2">
+                            <select name="status" class="form-select form-select-sm w-auto">
+                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>處理中</option>
+                                <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>出貨中</option>
+                                <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>已完成</option>
+                                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>已取消</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">更新</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-pill">詳情</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -3,71 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Apple 香港{% endblock %}</title>
+    <title>{% block title %}Apple Store{% endblock %}</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro HK", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
-        .navbar {
-            background: #1d1c1f !important;
-        }
-        .navbar-brand {
-            font-weight: 600;
-        }
-        .footer {
-            background: #f5f5f7;
-            padding: 2rem 0;
-            margin-top: 4rem;
-            font-size: 0.75rem;
-            color: #6e6e73;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">🍎 Apple 香港</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <!-- 苹果风格的导航菜单（可保留或自定义） -->
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.products') }}">產品</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.view_cart') }}">購物車</a></li>
-                    <!-- 认证相关链接 -->
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.orders') }}">我的訂單</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">登出</a></li>
-                        {% if current_user.username == 'admin' %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.index') }}">管理</a></li>
-                        {% endif %}
-                    {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">登入</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">註冊</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+    <nav class="navbar navbar-expand-lg sticky-top">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">
+          <i class="bi bi-apple"></i> Store
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarMain">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.products') }}">Store</a></li>
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Mac</a>
+              <ul class="dropdown-menu border-0 shadow-sm rounded-3">
+                <li><a class="dropdown-item" href="{{ url_for('main.product', product_id=1) }}">MacBook Air</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.product', product_id=2) }}">MacBook Pro</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.product', product_id=3) }}">iMac</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.product', product_id=4) }}">Mac mini</a></li>
+              </ul>
+            </li>
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">iPhone</a>
+              <ul class="dropdown-menu border-0 shadow-sm rounded-3">
+                <li><a class="dropdown-item" href="{{ url_for('main.product', product_id=9) }}">iPhone 16 Pro</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.product', product_id=10) }}">iPhone 16</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item"><a class="nav-link fw-bold" href="{{ url_for('main.support') }}">支援服務</a></li>
+          </ul>
+          
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <form class="d-flex" action="{{ url_for('main.search') }}" method="get">
+                <input class="form-control form-control-sm rounded-pill" type="search" name="q" placeholder="搜尋" style="width: 120px;">
+              </form>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.view_cart') }}"><i class="bi bi-bag"></i></a></li>
+            
+            {% if current_user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i></a>
+              <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3">
+                <li><a class="dropdown-item" href="{{ url_for('main.orders') }}">我的訂單</a></li>
+                
+                {% if current_user.is_admin %}
+                <li><a class="dropdown-item" href="#">管理後台 (待開發)</a></li>
+                {% endif %}
+                
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">登出</a></li>
+              </ul>
+            </li>
+            {% else %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="bi bi-person"></i></a></li>
+            {% endif %}
+          </ul>
         </div>
+      </div>
     </nav>
 
-    <main class="container mt-4">
+    <div class="container mt-3">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category else 'info' }} alert-dismissible fade show rounded-4">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
         {% endwith %}
+    </div>
+
+    <main>
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer">
-        <div class="container text-center">
-            <p>© 2025 Apple 香港商店。本網站僅為課程項目，非真實商業網站。</p>
+    <footer class="footer py-4 mt-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted small">© 2026 Apple Store 課程專案。此網站僅供教學用途。</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="{{ url_for('main.privacy') }}" class="text-muted small me-3 text-decoration-none">私隱政策</a>
+                    <a href="{{ url_for('main.terms') }}" class="text-muted small text-decoration-none">使用條款</a>
+                </div>
+            </div>
         </div>
     </footer>
 

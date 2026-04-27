@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}搜尋結果 - Apple Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="display-5 fw-bold mb-3">搜尋結果</h1>
+    <p class="lead mb-5">{% if query %}「{{ query }}」的搜尋結果{% else %}請輸入搜尋關鍵字{% endif %}</p>
+
+    {% if results %}
+    <div class="row g-4">
+        {% for product in results %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <img src="{{ product.image_url }}" class="card-img-top p-3" alt="{{ product.name }}" style="height: 200px; object-fit: contain;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-muted">{{ product.subtitle }}</p>
+                    <p class="fw-bold">{{ product.price }}</p>
+                    <a href="{{ url_for('public.product', product_id=product.id) }}" class="btn btn-outline-primary rounded-pill">了解更多</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info rounded-pill">找不到相關產品，請嘗試其他關鍵字。</div>
+    {% endif %}
+</div>
+{% endblock %}

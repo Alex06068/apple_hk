@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}結帳 - Apple Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-md-7 col-lg-8">
+            <h4 class="mb-3">收貨地址</h4>
+            <form action="{{ url_for('main.checkout') }}" method="POST" class="needs-validation">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">姓名</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">電子郵件</label>
+                        <input type="email" class="form-control" value="{{ current_user.email }}" readonly>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">詳細地址</label>
+                        <input type="text" class="form-control" name="address" required>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <h4 class="mb-3">付款方式</h4>
+                <div class="my-3">
+                    <div class="form-check">
+                        <input name="paymentMethod" type="radio" class="form-check-input" checked required>
+                        <label class="form-check-label">信用卡 / 扣帳卡</label>
+                    </div>
+                </div>
+
+                <button class="w-100 btn btn-primary btn-lg rounded-pill" type="submit">立即下單付款</button>
+            </form>
+        </div>
+
+        <div class="col-md-5 col-lg-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-primary">您的訂單摘要</span>
+                <span class="badge bg-primary rounded-pill">{{ items|length }}</span>
+            </h4>
+            <ul class="list-group mb-3">
+                {% for item in items %}
+                <li class="list-group-item d-flex justify-content-between lh-sm">
+                    <div>
+                        <h6 class="my-0">{{ item.product.name }}</h6>
+                        <small class="text-muted">數量: {{ item.quantity }}</small>
+                    </div>
+                    <span class="text-muted">HK$ {{ "{:,.0f}".format(item.subtotal) }}</span>
+                </li>
+                {% endfor %}
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <div class="text-success">
+                        <h6 class="my-0">運費</h6>
+                    </div>
+                    <span class="text-success">免費</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>總計 (HKD)</span>
+                    <strong>HK$ {{ "{:,.0f}".format(total) }}</strong>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

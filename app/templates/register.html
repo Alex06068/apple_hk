@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}建立您的 Apple ID - Apple Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 p-4">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-apple display-1"></i>
+                        <h2 class="fw-bold mt-3">建立 Apple ID</h2>
+                        <p class="text-muted">一個帳號，盡享 Apple 各項服務。</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('auth.register') }}">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="username" class="form-control rounded-3" id="regName" placeholder="用戶名稱" required>
+                            <label for="regName">用戶名稱</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="email" name="email" class="form-control rounded-3" id="regEmail" placeholder="name@example.com" required>
+                            <label for="regEmail">電郵地址</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" name="password" class="form-control rounded-3" id="regPassword" placeholder="密碼" required>
+                            <label for="regPassword">密碼</label>
+                        </div>
+
+                        <button class="btn btn-primary w-100 py-3 rounded-pill fw-bold mb-3" type="submit">
+                            繼續
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted">已經有帳號？</span>
+                        <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-bold">立即登入</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

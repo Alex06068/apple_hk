@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} - Apple Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-5">
+        <div class="display-1 mb-3">{{ category.icon }}</div>
+        <h1 class="display-4">{{ category.name }}</h1>
+        <p class="lead">{{ category.description }}</p>
+    </div>
+
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <img src="{{ product.image_url }}" class="card-img-top p-3" alt="{{ product.name }}" style="height: 200px; object-fit: contain;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-muted">{{ product.subtitle }}</p>
+                    <p class="fw-bold">{{ product.price }}</p>
+                    <a href="{{ url_for('public.product', product_id=product.id) }}" class="btn btn-outline-primary">了解更多</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

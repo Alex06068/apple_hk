@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{% if product %}編輯{% else %}新增{% endif %}產品 - Apple Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="display-5 fw-bold mb-4">{% if product %}編輯{% else %}新增{% endif %}產品</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">產品名稱</label>
+            <input type="text" class="form-control" name="name" value="{{ product.name if product else '' }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">副標題</label>
+            <input type="text" class="form-control" name="subtitle" value="{{ product.subtitle if product else '' }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">描述</label>
+            <textarea class="form-control" name="description" rows="4">{{ product.description if product else '' }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">價格</label>
+            <input type="text" class="form-control" name="price" value="{{ product.price if product else '' }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">分類</label>
+            <select class="form-select" name="category_id" required>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if product and product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">產品圖片</label>
+            <input type="file" class="form-control" name="image" accept="image/*">
+            {% if product and product.image_url %}
+            <img src="{{ product.image_url }}" width="100" class="mt-2 rounded">
+            {% endif %}
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" name="is_featured" id="is_featured" {% if product and product.is_featured %}checked{% endif %}>
+            <label class="form-check-label" for="is_featured">設為精選產品</label>
+        </div>
+        <button type="submit" class="btn btn-primary rounded-pill">儲存</button>
+        <a href="{{ url_for('admin.products') }}" class="btn btn-outline-secondary rounded-pill">取消</a>
+    </form>
+</div>
+{% endblock %}
