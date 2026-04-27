@@ -218,14 +218,19 @@ def support():
 
 # 確保這裡的縮進正確，不要有多餘的空格或少縮進
 @main.route('/profile')
+
 @login_required
+
 def profile():
     # 直接傳遞當前用戶對象到模板
     return render_template('profile.html', user=current_user)
 
 @main.route('/orders')
+
 @login_required
+
 def orders():
+    
     from .models.order import Order
     # 再次檢查：確保使用 created_at 而不是 timestamp，避免 AttributeError
     user_orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).all()

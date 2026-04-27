@@ -1,3 +1,5 @@
+import pymysql
+pymysql.install_as_MySQLdb()
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -77,6 +79,9 @@ def create_app():
             os.makedirs(os.path.join(basedir, 'instance'))
         
         # 建立所有資料表以符合 CRUD 功能要求
+    try:
         db.create_all()
+    except Exception as e:
+        print(f"Database table exists or error: {e}")
 
     return app

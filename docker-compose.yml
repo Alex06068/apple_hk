@@ -2,11 +2,15 @@ services:
   web1:
     build: .
     container_name: flask_web1
+    # --- 新增同步代碼 ---
+    volumes:
+      - .:/app
+    # ------------------
     depends_on:
       db:
         condition: service_healthy
     environment:
-      - DATABASE_URL=mysql+mysqlclient://flaskuser:flaskpass@db:3306/apple_hk
+      - DATABASE_URL=mysql+pymysql://flaskuser:flaskpass@db:3306/apple_hk
     ports:
       - "5001:5000"
     command: gunicorn -b 0.0.0.0:5000 run:app
@@ -14,11 +18,15 @@ services:
   web2:
     build: .
     container_name: flask_web2
+    # --- 新增同步代碼 ---
+    volumes:
+      - .:/app
+    # ------------------
     depends_on:
       db:
         condition: service_healthy
     environment:
-      - DATABASE_URL=mysql+mysqlclient://flaskuser:flaskpass@db:3306/apple_hk
+      - DATABASE_URL=mysql+pymysql://flaskuser:flaskpass@db:3306/apple_hk
     ports:
       - "5002:5000"
     command: gunicorn -b 0.0.0.0:5000 run:app
@@ -32,6 +40,7 @@ services:
       MYSQL_PASSWORD: flaskpass
       MYSQL_ROOT_PASSWORD: rootpass
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
       timeout: 20s
       retries: 10
