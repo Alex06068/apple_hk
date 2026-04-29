@@ -40,7 +40,7 @@ def index():
 
     categories = Category.query.all()
 
-    products = Product.query.filter_by(is_featured=True).all()
+    products = Product.query.all()
 
     return render_template('index.html', categories=categories, products=products)
 

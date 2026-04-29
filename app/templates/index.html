@@ -31,13 +31,13 @@
         </div>
     </section>
 
-    <section class="mb-5">
+<section class="mb-5">
         <h2 class="text-center mb-5 fw-bold">精選產品</h2>
         <div class="row g-4">
             {% for product in products %} 
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                    {# 核心修正：增加 default 判斷，防止 image_url 為空時報 BuildError #}
+                    {# 修正圖片路徑：確保使用 image_url 字段 #}
                     <img src="{{ url_for('static', filename=product.image_url or 'images/default-product.jpg') }}" 
                          class="card-img-top p-4" 
                          alt="{{ product.name }}" 
@@ -51,9 +51,10 @@
                         <p class="fw-bold text-dark text-center fs-5">
                             HK$ {{ "{:,.0f}".format(product.price) }}
                         </p>
+                        {# 核心修正：將 product_id 改為 id (通常 Flask-Admin 預設使用 id) #}
                         <a href="{{ url_for('main.product', product_id=product.id) }}"
                            class="btn btn-outline-primary rounded-pill w-100 fw-bold">
-                            了解更多
+                           了解更多
                         </a>
                     </div>
                 </div>

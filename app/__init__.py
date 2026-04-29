@@ -74,14 +74,17 @@ def create_app():
     app.register_blueprint(auth)
 
     # --- 建立資料庫表 ---
+    # --- 建立資料庫表 ---
     with app.app_context():
+        # 確保資料夾存在
         if not os.path.exists(os.path.join(basedir, 'instance')):
             os.makedirs(os.path.join(basedir, 'instance'))
         
-        # 建立所有資料表以符合 CRUD 功能要求
-    try:
-        db.create_all()
-    except Exception as e:
-        print(f"Database table exists or error: {e}")
+        # 建立資料表 (這行必須在 app_context 裡面)
+        try:
+            db.create_all()
+        except Exception as e:
+            print(f"Database table exists or error: {e}")
 
+    # 重點：這個 return 必須在函數的最外層縮進！
     return app
