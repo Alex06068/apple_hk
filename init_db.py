@@ -1,6 +1,7 @@
 from app import create_app, db
 from app.models.product import Product
 from app.models.category import Category
+from app.models.user import User  # 必須引入 User 模型
 
 app = create_app()
 
@@ -9,18 +10,29 @@ with app.app_context():
     db.drop_all()
     db.create_all()
 
-    print("正在插入豐富的種子數據...")
+    print("正在插入種子數據...")
 
-    # 1. 建立分類 (移除報錯的 icon 參數)
+    # 1. 建立管理員用戶 (對齊設計圖：包含 first_name, last_name)
+    admin = User(
+        username='admin',
+        email='admin@apple.hk',
+        first_name='System',    # 必須填寫
+        last_name='Admin',      # 必須填寫
+        is_admin=True,
+        active=True             # 對齊設計圖
+    )
+    admin.set_password('admin123')
+    db.session.add(admin)
+
+    # 2. 建立分類
     cat_iphone = Category(name='iPhone')
     cat_mac = Category(name='Mac')
     cat_ipad = Category(name='iPad')
     db.session.add_all([cat_iphone, cat_mac, cat_ipad])
-    db.session.commit()
+    db.session.commit() # 先 commit 以獲取分類 ID
 
-    # 2. 建立多樣化產品
+    # 3. 建立多樣化產品
     products = [
-        # iPhone 系列
         Product(
             name='iPhone 16 Pro', 
             price=8599, 
@@ -39,7 +51,6 @@ with app.app_context():
             image_filename='iphone_16.jpg',
             is_featured=True
         ),
-        # Mac 系列
         Product(
             name='MacBook Air 13', 
             price=8999, 
@@ -58,7 +69,6 @@ with app.app_context():
             image_filename='macbook_pro.jpg',
             is_featured=True
         ),
-        # iPad 系列
         Product(
             name='iPad Pro', 
             price=7999, 
@@ -72,4 +82,4 @@ with app.app_context():
 
     db.session.add_all(products)
     db.session.commit()
-    print("✅ 成功插入 5 個精選產品！")
+    print("✅ 成功插入管理員帳號及 5 個精選產品！")
